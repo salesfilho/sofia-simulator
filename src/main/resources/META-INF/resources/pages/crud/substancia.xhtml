@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/layoutCrud.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"   
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:o="http://omnifaces.org/ui">
+
+
+    <!-- passa parâmetro para o template especificando o Mbean -->  
+    <ui:param name="defaultBean" value="#{substanciaMBean}" />  
+
+
+    <!-- Bloco de Pesquisa -->
+    <ui:define name="searchBlock">
+        <f:facet name="header">  
+            Pesquisar
+        </f:facet>  
+
+        <h:panelGrid columns="1" id="panel_searchBlock">  
+        </h:panelGrid>
+    </ui:define>  
+
+    <!-- Bloco de Listagem -->
+    <ui:define name="listBlock">
+        <h:panelGrid columns="1" id="panel_listBlock">  
+            <p:column>
+
+                <p:commandButton value="Novo" actionListener="#{substanciaMBean.changeToInsertState()}" update="@form"/>  
+
+                <p:dataTable id="list_lazyDataTable" 
+                             value="#{substanciaMBean.beans}"
+                             var="substancia"
+                             rendered="true"
+                             paginator="true" paginatorPosition="bottom" 
+                             rows="10"
+                             emptyMessage="Nenhum registro encontrado."
+                             currentPageReportTemplate="Exibindo de {startRecord} até {endRecord} do total de {totalRecords} registros."
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15">
+
+                    <f:facet name="header">
+                        Substâncias
+                    </f:facet>
+
+                    <p:column headerText="ID" sortBy="#{substancia.id}">
+                        <h:outputText value="#{substancia.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nome" sortBy="#{substancia.nome}" filterBy="#{substancia.nome}">
+                        <h:outputText value="#{substancia.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Descrição" sortBy="#{substancia.descricao}" filterBy="#{substancia.descricao}">
+                        <h:outputText value="#{substancia.descricao}" />
+                    </p:column>
+
+                    <p:column headerText="Fórmula" sortBy="#{substancia.formula}" filterBy="#{substancia.formula}">
+                        <h:outputText value="#{substancia.formula}" />
+                    </p:column>
+
+                    <p:column headerText="Massa molar" sortBy="#{substancia.massaMolar}" filterBy="#{substancia.massaMolar}">
+                        <h:outputText value="#{substancia.massaMolar}" />
+                    </p:column>
+
+                    <p:column headerText="Ações" width="150" style="alignment-adjust: central" >
+
+                        <p:commandButton actionListener="#{substanciaMBean.startUpdate(substancia.id)}" update="@form" icon="ui-icon-pencil" title="Editar" />
+                        <p:commandButton actionListener="#{substanciaMBean.startDetail(substancia.id)}" update="@form" title="Detalhes" icon="ui-icon-search"/>
+                        <p:commandButton actionListener="#{substanciaMBean.processDelete(substancia.id)}" update="@form" icon="ui-icon-trash" title="Excluir" >
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert"/>
+                        </p:commandButton>
+                    </p:column>
+                    <f:facet name="footer">  
+
+                    </f:facet>  
+                </p:dataTable>
+
+            </p:column>
+        </h:panelGrid>
+
+    </ui:define>  
+
+    <!-- Bloco de Insert -->
+    <ui:define name="insertBlock">          
+        <f:facet name="header">  
+            Cadastrar de Substâncias
+        </f:facet>  
+
+        <h:panelGrid columns="2" id="panel_insertBlock" style="width: 100%">  
+            <h:outputLabel value="Nome"/>  
+            <h:inputText value="#{substanciaMBean.bean.nome}" size="30" />  
+
+            <h:outputLabel value="Descrição"/>  
+            <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" />  
+
+            <h:outputLabel value="Formula"/>  
+            <h:inputText value="#{substanciaMBean.bean.formula}" size="30" />  
+
+            <h:outputLabel value="Massa molar"/>  
+            <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" />  
+
+            <h:outputLabel value="Propriedades"/>  
+            <p:pickList  value="#{substanciaMBean.insertPropriedadeList}" 
+                         var="propriedade" 
+                         effect="fade"
+                         itemValue="#{propriedade}" 
+                         itemLabel="#{propriedade.nome}  (#{propriedade.descricao})" 
+                         showSourceControls="false" 
+                         showTargetControls="false" 
+                         showCheckbox="true" 
+                         responsive="true"
+                         showSourceFilter="true" 
+                         showTargetFilter="true" 
+                         filterMatchMode="contains" 
+                         >
+                <o:converter converterId="omnifaces.ListConverter" list="#{substanciaMBean.fullList}" />
+
+                <f:facet name="sourceCaption">Disponíveis</f:facet>
+                <f:facet name="targetCaption">Selecionados</f:facet>
+
+                <p:column style="width:15%">
+                    <h:outputText value="#{propriedade.nome}" />
+                </p:column>
+
+                <p:column style="width:85%;">
+                    <h:outputText value="#{propriedade.descricao}" />
+                </p:column>
+            </p:pickList>
+
+            <p:commandButton value="Cadastrar" actionListener="#{substanciaMBean.processInsert()}" update="@form"/>  
+            <p:commandButton value="Cancelar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>  
+        </h:panelGrid>  
+
+    </ui:define>  
+
+    <!-- Bloco de Update -->
+    <ui:define name="updateBlock"> 
+        <f:facet name="header">  
+            Editar
+        </f:facet>  
+
+        <h:panelGrid columns="2" id="panel_updateBlock" >  
+
+            <h:outputLabel value="Nome"/>  
+            <h:inputText value="#{substanciaMBean.bean.nome}" size="30" />  
+
+            <h:outputLabel value="Descrição"/>  
+            <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" />  
+
+            <h:outputLabel value="Formula"/>  
+            <h:inputText value="#{substanciaMBean.bean.formula}" size="30" />  
+
+            <h:outputLabel value="Massa molar"/>  
+            <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" />  
+
+            <h:outputLabel value="Propriedades"/>  
+
+            <p:panel  header="Propriedades" style="margin-bottom:20px">
+                <h:panelGrid columns="3">
+
+                    <p:selectOneListbox style="width: 350px;height: 400px"
+                                        id="src_prop_lst" 
+                                        label="Origem"
+                                        value="#{substanciaMBean.srcPropriedade}" 
+                                        converter="omnifaces.SelectItemsConverter" 
+                                        var="p" 
+                                        filter="true" 
+                                        filterMatchMode="contains">
+                        <f:selectItems value="#{substanciaMBean.soucreList}" 
+                                       var="prop" 
+                                       itemLabel="#{prop.nome}" 
+                                       itemValue="#{prop}" />
+                        <p:column>
+                            <h:outputText value="#{p.nome}" />
+                        </p:column>
+
+                        <p:column>
+                            <h:outputText value="#{p.descricao}" />
+                        </p:column>
+                    </p:selectOneListbox>
+
+                    <p:panelGrid columns="1">
+
+                        <p:commandButton  actionListener="#{substanciaMBean.addPropriedade()}" icon="ui-icon-arrowthick-1-e" title="Adicionar" update="@form"/>
+                        <p:commandButton  actionListener="#{substanciaMBean.removePropriedade()}" icon="ui-icon-arrowthick-1-w" title="Remover" update="@form"/>
+
+                    </p:panelGrid>
+
+                    <p:selectOneListbox style="width: 350px;height: 400px"
+                                        id="dst_prop_lst" 
+                                        label="Destino"
+                                        value="#{substanciaMBean.dstPropriedade}" 
+                                        converter="omnifaces.SelectItemsConverter" 
+                                        var="p" 
+                                        filter="true" 
+                                        filterMatchMode="contains">
+                        <f:selectItems value="#{substanciaMBean.destinationList}" 
+                                       var="prop" 
+                                       itemLabel="#{prop.nome}" 
+                                       itemValue="#{prop}" />
+                        <p:column>
+                            <h:outputText value="#{p.nome}" />
+                        </p:column>
+
+                        <p:column>
+                            <h:outputText value="#{p.descricao}" />
+                        </p:column>
+                    </p:selectOneListbox>
+                </h:panelGrid>
+            </p:panel>
+
+        </h:panelGrid>
+
+        <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
+        <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
+
+    </ui:define>  
+
+
+    <!-- Bloco de Update -->
+    <ui:define name="detailBlock"> 
+        <f:facet name="header">  
+            Editar
+        </f:facet>  
+
+        <h:panelGrid columns="2" id="panel_datailBlock" >  
+
+            <h:outputLabel value="Nome"/>  
+            <h:outputText value="#{substanciaMBean.bean.nome}" />  
+
+            <h:outputLabel value="Descrição"/>  
+            <h:outputText value="#{substanciaMBean.bean.descricao}"/>  
+
+            <h:outputLabel value="Formula"/>  
+            <h:outputText value="#{substanciaMBean.bean.formula}"/>  
+
+            <h:outputLabel value="Massa molar"/>  
+            <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
+            <h:outputLabel value="Propriedades vinculadas"/>  
+
+            <h:panelGrid columns="1" style="width: 80%" >  
+                <p:dataList value="#{substanciaMBean.propriedades}" 
+                            var="propriedade" 
+                            emptyMessage="Sem registro." >
+                    <f:facet name="header">
+                        Propriedades
+                    </f:facet>
+                    #{propriedade.nome} - #{propriedade.descricao}
+                </p:dataList>
+            </h:panelGrid>
+        </h:panelGrid>  
+        <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
+
+    </ui:define>  
+
+</ui:composition>

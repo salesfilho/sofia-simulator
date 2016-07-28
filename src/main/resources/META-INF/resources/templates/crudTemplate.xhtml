@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <body>  
+        <p:outputPanel rendered="true" id="mainOutputPanel">  
+            <h:outputLabel value="Modo de operação: #{contatoCrudMBean.currentState}"/>  
+
+            <h:form>  
+                <!-- bloco de pesquisa ou listagem -->  
+                <p:panel id="searchlistBlock"  
+                         rendered="#{defaultBean.searchState or defaultBean.listState}">  
+                    <f:facet name="header">  
+                        Pesquisar: <br/>
+                    </f:facet>  
+                    <ui:insert name="searchlistBlock">  
+                    </ui:insert>  
+                </p:panel>  
+                <!-- bloco de edição ou inclusao -->  
+                <p:panel id="addUpdateBlock"  
+                         rendered="#{defaultBean.insertState or defaultBean.editState}">  
+                    <f:facet name="header">  
+                        Detalhe: <br/>  
+                    </f:facet>  
+                    <ui:insert name="addUpdateBlock">  
+                    </ui:insert>  
+                </p:panel>  
+            </h:form>  
+        </p:outputPanel>  
+    </body> 
+</html>

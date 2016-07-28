@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/templates/layoutCrud.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"   
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <!-- passa parâmetro para o template especificando o Mbean -->  
+    <ui:param name="defaultBean" value="#{parametroMBean}" />  
+
+
+    <!-- Bloco de Pesquisa -->
+    <ui:define name="searchBlock">
+        <f:facet name="header">  
+            Pesquisar
+        </f:facet>  
+
+        <h:panelGrid columns="1" id="panel_searchBlock">  
+        </h:panelGrid>
+    </ui:define>  
+
+    <!-- Bloco de Listagem -->
+    <ui:define name="listBlock">
+        <h:panelGrid columns="1" id="panel_listBlock">  
+            <p:column>
+
+                <p:commandButton value="Novo" actionListener="#{parametroMBean.changeToInsertState()}" update="@form"/>  
+
+                <p:dataTable id="list_lazyDataTable" 
+                             value="#{parametroMBean.beans}"
+                             var="parametro"
+                             rendered="true"
+                             paginator="true" paginatorPosition="bottom" 
+                             rows="10"
+                             emptyMessage="Nenhum registro encontrado."
+                             currentPageReportTemplate="Exibindo de {startRecord} até {endRecord} do total de {totalRecords} registros."
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15">
+
+                    <f:facet name="header">
+                        Parâmetros
+                    </f:facet>
+
+                    <p:column headerText="ID" sortBy="#{parametro.id}">
+                        <h:outputText value="#{parametro.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nome" sortBy="#{parametro.nome}" filterBy="#{parametro.nome}">
+                        <h:outputText value="#{parametro.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Descrição" sortBy="#{parametro.descricao}" filterBy="#{parametro.descricao}">
+                        <h:outputText value="#{parametro.descricao}" />
+                    </p:column>
+
+                    <p:column headerText="Valor" sortBy="#{parametro.valor}" filterBy="#{parametro.valor}">
+                        <h:outputText value="#{parametro.valor}" />
+                    </p:column>
+
+                    <p:column headerText="Ações" width="150" style="alignment-adjust: central" >
+                        <p:commandButton actionListener="#{parametroMBean.startUpdate(parametro.id)}" update="@form" icon="ui-icon-pencil" title="Editar" />
+                        <p:commandButton actionListener="#{parametroMBean.startDetail(parametro.id)}" update="@form" title="Detalhes" icon="ui-icon-search"/>
+                        <p:commandButton actionListener="#{parametroMBean.processDelete(parametro.id)}" update="@form" icon="ui-icon-trash" title="Excluir" >
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert"/>
+                        </p:commandButton>
+                    </p:column>
+                    <f:facet name="footer">  
+
+                    </f:facet>  
+                </p:dataTable>
+
+            </p:column>
+        </h:panelGrid>
+
+    </ui:define>  
+
+    <!-- Bloco de Insert -->
+    <ui:define name="insertBlock">          
+        <f:facet name="header">  
+            Cadastrar de parametros
+        </f:facet>  
+
+        <h:panelGrid columns="2" id="panel_insertBlock" >  
+            <h:outputLabel value="Nome"/>  
+            <h:inputText value="#{parametroMBean.bean.nome}" size="30" />  
+
+            <h:outputLabel value="Descricao"/>  
+            <h:inputText value="#{parametroMBean.bean.descricao}" size="30" />  
+
+            <h:outputLabel value="Valor"/>  
+            <h:inputText value="#{parametroMBean.bean.valor}" size="30" />  
+
+            <p:commandButton value="Cadastrar" actionListener="#{parametroMBean.processInsert()}" update="@form"/>  
+            <p:commandButton value="Cancelar" actionListener="#{parametroMBean.changeToListState()}" update="@form"/>  
+        </h:panelGrid>  
+
+    </ui:define>  
+
+    <!-- Bloco de Update -->
+    <ui:define name="updateBlock"> 
+        <f:facet name="header">  
+            Editar
+        </f:facet>  
+
+        <h:panelGrid columns="2" id="panel_updateBlock" >  
+            <h:outputLabel value="Nome"/>  
+            <h:inputText value="#{parametroMBean.bean.nome}" size="30" />  
+
+            <h:outputLabel value="Descricao"/>  
+            <h:inputText value="#{parametroMBean.bean.descricao}" size="30" />  
+
+            <h:outputLabel value="Valor"/>  
+            <h:inputText value="#{parametroMBean.bean.valor}" size="30" />  
+
+        </h:panelGrid>  
+        <p:commandButton value="Salvar" actionListener="#{parametroMBean.processUpdate()}" />
+        <p:commandButton value="Voltar" actionListener="#{parametroMBean.changeToListState()}" update="@form"/>
+
+    </ui:define>  
+
+    <!-- Bloco de Detalhe -->
+    <ui:define name="detailBlock"> 
+        <f:facet name="header">  
+            Detalhe
+        </f:facet>  
+        <h:panelGrid columns="2" id="panel_detailBlock" style="width: 100%" >  
+            <h:outputLabel value="Nome"/>  
+            <h:outputText value="#{parametroMBean.bean.nome}" />  
+
+            <h:outputLabel value="Descricao"/>  
+            <h:outputText value="#{parametroMBean.bean.descricao}" />  
+
+            <h:outputLabel value="Valor"/>  
+            <h:outputText value="#{parametroMBean.bean.valor}" />  
+
+
+            <h:outputLabel value="Propriedades vinculadas"/>  
+            <h:panelGrid columns="1" style="width: 80%" >  
+                <p:dataList value="#{parametroMBean.propriedades}" 
+                            var="propriedade" 
+                            emptyMessage="Sem registro." >
+                    <f:facet name="header">
+                        Propriedades
+                    </f:facet>
+                    #{propriedade.nome} - #{propriedade.descricao}
+                </p:dataList>
+            </h:panelGrid>
+
+            <p:commandButton value="Voltar" actionListener="#{parametroMBean.changeToListState()}" update="@form"/>
+        </h:panelGrid>  
+
+    </ui:define>  
+
+</ui:composition>

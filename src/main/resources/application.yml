@@ -1,0 +1,24 @@
+spring: 
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/sofia
+    username: postgres
+    password: postgres
+# Number of ms to wait before throwing an exception if no connection is available.
+    max-wait: 1000
+# Maximum number of active connections that can be allocated from this pool at the same time.
+    max-active: 4
+# Validate the connection before borrowing it from the pool.
+    test-on-borrow: false    
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+        naming-strategy: org.hibernate.cfg.EJB3NamingStrategy
+jsf:
+  PROJECT_STAGE: Development
+  primefaces:
+    theme: overcast
+jsf-spring-boot-starter:
+  version: @jsf-spring-boot-starter.version@
+  

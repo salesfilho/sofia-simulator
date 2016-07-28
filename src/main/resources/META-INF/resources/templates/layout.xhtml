@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head></h:head>
+
+    <h:body>
+
+        <p:layout fullPage="true">
+            <p:layoutUnit position="center" resizable="true" size="100" minSize="40" maxSize="200">
+                <!--Sistema -->
+                <ui:insert name="headerSystem" >
+                    <ui:include src="system.xhtml" />
+                </ui:insert>
+                <!--Menu -->
+                <ui:insert name="headerMenu" >
+                    <ui:include src="menu.xhtml" />
+                </ui:insert>
+
+                <!--Notificações -->
+                <ui:insert name="notification" >
+                    <ui:include src="notification.xhtml" />
+                </ui:insert>
+
+                <!--Conteúdo -->
+                <ui:insert name="content" >
+                    <ui:include src="content.xhtml" />
+                </ui:insert>
+
+            </p:layoutUnit>
+
+            <!--Rodapé -->
+
+            <p:layoutUnit position="south">
+                <ui:insert name="footer" >
+                    <ui:include src="footer.xhtml" />
+                </ui:insert>
+            </p:layoutUnit>
+
+        </p:layout>
+    </h:body>
+
+</html>
