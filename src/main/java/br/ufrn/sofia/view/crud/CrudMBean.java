@@ -86,6 +86,17 @@ public class CrudMBean<T extends Object, ID extends Serializable> extends BaseMB
     }
 
     /**
+     * Adiciona
+     */
+    public void save() {
+        try {
+            this.bean = crudService.save(this.bean);
+        } catch (Exception e) {
+            Logger.getLogger(CrudMBean.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    /**
      * Prepara view atualizar
      *
      * @param id
@@ -94,6 +105,7 @@ public class CrudMBean<T extends Object, ID extends Serializable> extends BaseMB
         this.setBean(crudService.findOne(id));
         this.setCurrentState(UPDATE_STATE);
     }
+
     /**
      * Prepara view detalhe
      *

@@ -16,12 +16,16 @@
 package br.ufrn.sofia.domain;
 
 import java.util.Set;
+import java.util.TreeSet;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -35,7 +39,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"parametros", "substancias"}, callSuper = true)
+@EqualsAndHashCode(exclude = {"parametros", "substancia"}, callSuper = true)
 @Builder
 @Entity
 @SequenceGenerator(sequenceName = "seq_propriedade", name = "ID_SEQUENCE", allocationSize = 1)
@@ -45,18 +49,24 @@ public class Propriedade extends AbstractBean<Propriedade, Long> {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "parametro_propriedade",
-            joinColumns = {
-                @JoinColumn(table = "propriedade", name = "propriedades_id", referencedColumnName = "id")},
-            inverseJoinColumns = {
-                @JoinColumn(table = "parametro", name = "parametros_id", referencedColumnName = "id")}
-    )
-    private Set<Parametro> parametros;
+    @OneToMany(mappedBy = "propriedade", orphanRemoval = true, cascade = {CascadeType.ALL})
+    private Set<Parametro> parametros = new TreeSet<>();
 
-    @ManyToMany(mappedBy = "propriedades", fetch = FetchType.EAGER)
-    private Set<Substancia> substancias;
+    @ManyToOne(optional = false)
+    private Substancia substancia;
+
+    public void addParametro(Parametro param) {
+        if (param != null && !parametros.contains(param)) {
+            param.setPropriedade(this);
+            parametros.add(param);
+        }
+    }
+
+    public void removeParametro(Parametro param) {
+        if (param != null && parametros.contains(param)) {
+            parametros.remove(param);
+        }
+    }
 
     @Override
     public int compareTo(Propriedade obj) {
@@ -65,7 +75,7 @@ public class Propriedade extends AbstractBean<Propriedade, Long> {
 
     @Override
     public String toString() {
-        return String.format("Parametro[%d, %s, %s]", getId(), getNome(), getDescricao());
+        return String.format("Propriedade[%d, %s, %s]", getId(), getNome(), getDescricao());
     }
 
 }

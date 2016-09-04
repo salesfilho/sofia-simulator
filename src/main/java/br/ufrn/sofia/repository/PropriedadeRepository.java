@@ -16,6 +16,8 @@
 package br.ufrn.sofia.repository;
 
 import br.ufrn.sofia.domain.Propriedade;
+import br.ufrn.sofia.domain.Substancia;
+import java.util.Set;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,4 +31,6 @@ public interface PropriedadeRepository extends CrudRepository<Propriedade, Long>
 
     @Transactional
     public void deleteByNome(String descricao);
+
+    public Set<Propriedade> findBySubstancia(Substancia substancia);
 }

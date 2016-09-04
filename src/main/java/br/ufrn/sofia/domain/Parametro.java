@@ -15,11 +15,12 @@
  */
 package br.ufrn.sofia.domain;
 
-import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true, exclude = {"propriedades"})
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @Entity
 @SequenceGenerator(sequenceName = "seq_parametro", name = "ID_SEQUENCE", allocationSize = 1)
@@ -47,13 +48,14 @@ public class Parametro extends AbstractBean<Parametro, Long> {
     @Column(nullable = false, unique = false)
     private double valor;
 
-     @ManyToMany(mappedBy = "parametros", fetch = FetchType.EAGER)
-    private Set<Propriedade> propriedades;
+    @ManyToOne(optional = false)
+    private Propriedade propriedade;
 
     @Override
     public int compareTo(Parametro obj) {
         return getNome().compareTo(obj.getNome());
     }
+
     @Override
     public String toString() {
         return String.format("Parametro[%d, %s, %s]", getId(), getNome(), this.valor);

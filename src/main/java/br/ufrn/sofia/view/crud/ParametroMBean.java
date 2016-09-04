@@ -16,9 +16,6 @@
 package br.ufrn.sofia.view.crud;
 
 import br.ufrn.sofia.domain.Parametro;
-import br.ufrn.sofia.domain.Propriedade;
-import java.util.ArrayList;
-import java.util.List;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Named;
 
@@ -30,17 +27,9 @@ import javax.inject.Named;
 @ViewScoped
 public class ParametroMBean extends CrudMBean<Parametro, Long> {
 
-    public List<Propriedade> getPropriedades() {
-        if (getBean() != null) {
-            return new ArrayList(getBean().getPropriedades());
-        }
-        return new ArrayList();
-    }
-
     @Override
     public void changeToInsertState() {
         this.setBean(null);
         super.changeToInsertState();
     }
-
 }

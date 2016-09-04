@@ -16,6 +16,10 @@
 package br.ufrn.sofia.service;
 
 import br.ufrn.sofia.domain.Propriedade;
+import br.ufrn.sofia.domain.Substancia;
+import br.ufrn.sofia.repository.PropriedadeRepository;
+import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -23,6 +27,12 @@ import javax.inject.Named;
  * @author salesfilho
  */
 @Named
-public class PropriedadeService extends CrudService<Propriedade, Long>{
-    
+public class PropriedadeService extends CrudService<Propriedade, Long> {
+
+    @Inject
+    private PropriedadeRepository propriedadeRepository;
+
+    public Set<Propriedade> findBySubstancia(Substancia substancia) {
+        return propriedadeRepository.findBySubstancia(substancia);
+    }
 }

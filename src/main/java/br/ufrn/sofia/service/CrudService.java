@@ -77,9 +77,6 @@ public class CrudService<T extends Object, ID extends Serializable> {
         return repository.findOne(id);
     }
 
-//    public Iterable<T> findAll() {
-//        return repository.findAll();
-//    }
     public List<T> findAll() {
         List<T> result = new ArrayList();
         for (T next : repository.findAll()) {

@@ -15,20 +15,17 @@
  */
 package br.ufrn.sofia.view.crud;
 
+import br.ufrn.sofia.domain.Parametro;
 import br.ufrn.sofia.domain.Propriedade;
 import br.ufrn.sofia.domain.Substancia;
+import br.ufrn.sofia.service.ParametroService;
 import br.ufrn.sofia.service.PropriedadeService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
-import org.primefaces.event.TransferEvent;
-import org.primefaces.model.DualListModel;
+import org.primefaces.event.FlowEvent;
 
 /**
  *
@@ -38,108 +35,73 @@ import org.primefaces.model.DualListModel;
 @ViewScoped
 public class SubstanciaMBean extends CrudMBean<Substancia, Long> {
 
-    @Getter
-    @Setter
-    private DualListModel<Propriedade> insertPropriedadeList;
-
-    @Getter
-    @Setter
-    private List<Propriedade> fullList;
-
-    @Getter
-    @Setter
-    private Propriedade srcPropriedade;
-
-    @Getter
-    @Setter
-    private Propriedade dstPropriedade;
-
-    @Getter
-    @Setter
-    private List<Propriedade> soucreList;
-
-    @Getter
-    @Setter
-    private List<Propriedade> destinationList;
-
-    private List<Propriedade> initialDestinationList;
-
     @Inject
     private PropriedadeService propriedadeService;
+    @Inject
+    private ParametroService parametroService;
 
-    @PostConstruct
-    private void initPickLists() {
-        insertPropriedadeList = new DualListModel();
-        fullList = propriedadeService.findAll();
-    }
+    @Getter
+    @Setter
+    private Propriedade propriedade;
 
-    private void configureInsertPickList() {
-        fullList = propriedadeService.findAll();
-        insertPropriedadeList.setSource(fullList);
-        insertPropriedadeList.setTarget(new ArrayList<>());
-    }
+    @Getter
+    @Setter
+    private Parametro parametro;
 
-    private void configureUpdatePickList() {
-        fullList = propriedadeService.findAll();
-        List<Propriedade> tmpSourceList = fullList;
-        initialDestinationList = new ArrayList();
-        if (getBean() != null && getBean().getPropriedades() != null) {
-            initialDestinationList = new ArrayList(getBean().getPropriedades());
-            for (Propriedade prop : initialDestinationList) {
-                if (tmpSourceList.contains(prop)) {
-                    tmpSourceList.remove(prop);
-                }
-            }
-        }
-        soucreList = tmpSourceList;
-        destinationList = initialDestinationList;
-    }
-
-    public List<Propriedade> getPropriedades() {
-        if (getBean() != null) {
-            return new ArrayList(getBean().getPropriedades());
-        }
-        return new ArrayList();
+    @Override
+    public void init() {
+        super.init();
+        propriedade = new Propriedade();
+        parametro = new Parametro();
     }
 
     @Override
     public void changeToInsertState() {
         this.setBean(null);
         super.changeToInsertState();
-        configureInsertPickList();
-    }
-
-    @Override
-    public void processInsert() {
-        getBean().setPropriedades(new TreeSet(insertPropriedadeList.getTarget()));
-        super.processInsert();
-    }
-
-    @Override
-    public void startUpdate(Long id) {
-        super.startUpdate(id);
-        configureUpdatePickList();
-    }
-
-    @Override
-    public void processUpdate() {
-        getBean().setPropriedades(new TreeSet(getDestinationList()));
-        super.processUpdate();
     }
 
     public void addPropriedade() {
-
-        if (getSrcPropriedade() != null && !destinationList.contains(getSrcPropriedade())) {
-            destinationList.add(getSrcPropriedade());
-            soucreList.remove(getSrcPropriedade());
+        if (propriedade != null && !getBean().getPropriedades().contains(propriedade)) {
+            getBean().addPropriedade(propriedade);
+            propriedade = new Propriedade();
         }
     }
 
-    public void removePropriedade() {
-        if (getDstPropriedade() != null && !soucreList.contains(getDstPropriedade())) {
-            soucreList.add(getDstPropriedade());
-            destinationList.remove(getDstPropriedade());
+    public void removePropriedade(Propriedade outraPropriedade) {
+        if (outraPropriedade != null) {
+            getBean().removePropriedade(outraPropriedade);
         }
     }
 
+    public void addParametroToPropriedade(Propriedade prop) {
+        if (prop != null && parametro != null) {
+            getBean().removePropriedade(prop);
+            prop.addParametro(parametro);
+            getBean().addPropriedade(prop);
+        }
+        parametro = new Parametro();
+    }
+
+    public void removeParametroFromPropriedade(Parametro outroParametro, Propriedade outraPropriedade) {
+        if (outroParametro != null && outraPropriedade != null) {
+            getBean().removePropriedade(outraPropriedade);
+            outraPropriedade.removeParametro(outroParametro);
+            getBean().addPropriedade(outraPropriedade);
+        }
+    }
+
+    public String onFlowInsertProcess(FlowEvent event) {
+        System.out.println("Insert: " + event);
+        //Insere logo a substância
+        if (event.getOldStep().equalsIgnoreCase("tab_substancia_insert")) {
+            //this.save();
+        }
+        return event.getNewStep();
+    }
+
+    public String onFlowUpdateProcess(FlowEvent event) {
+        System.out.println("Update: " + event);
+        return event.getNewStep();
+    }
 }

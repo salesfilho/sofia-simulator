@@ -23,6 +23,6 @@ import javax.inject.Named;
  * @author salesfilho
  */
 @Named
-public class SubstanciaService extends CrudService<Substancia, Long>{
-    
+public class SubstanciaService extends CrudService<Substancia, Long> {
+
 }

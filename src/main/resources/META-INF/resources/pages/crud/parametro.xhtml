@@ -5,14 +5,12 @@
                 xmlns="http://www.w3.org/1999/xhtml"   
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 
     <!-- passa parâmetro para o template especificando o Mbean -->  
     <ui:param name="defaultBean" value="#{parametroMBean}" />  
-
 
     <!-- Bloco de Pesquisa -->
     <ui:define name="searchBlock">
@@ -28,9 +26,7 @@
     <ui:define name="listBlock">
         <h:panelGrid columns="1" id="panel_listBlock">  
             <p:column>
-
                 <p:commandButton value="Novo" actionListener="#{parametroMBean.changeToInsertState()}" update="@form"/>  
-
                 <p:dataTable id="list_lazyDataTable" 
                              value="#{parametroMBean.beans}"
                              var="parametro"
@@ -84,7 +80,6 @@
         <f:facet name="header">  
             Cadastrar de parametros
         </f:facet>  
-
         <h:panelGrid columns="2" id="panel_insertBlock" >  
             <h:outputLabel value="Nome"/>  
             <h:inputText value="#{parametroMBean.bean.nome}" size="30" />  
@@ -117,10 +112,9 @@
             <h:outputLabel value="Valor"/>  
             <h:inputText value="#{parametroMBean.bean.valor}" size="30" />  
 
+            <p:commandButton value="Salvar" actionListener="#{parametroMBean.processUpdate()}" />
+            <p:commandButton value="Voltar" actionListener="#{parametroMBean.changeToListState()}" update="@form"/>
         </h:panelGrid>  
-        <p:commandButton value="Salvar" actionListener="#{parametroMBean.processUpdate()}" />
-        <p:commandButton value="Voltar" actionListener="#{parametroMBean.changeToListState()}" update="@form"/>
-
     </ui:define>  
 
     <!-- Bloco de Detalhe -->
@@ -128,7 +122,7 @@
         <f:facet name="header">  
             Detalhe
         </f:facet>  
-        <h:panelGrid columns="2" id="panel_detailBlock" style="width: 100%" >  
+        <h:panelGrid columns="2" id="panel_detailBlock">  
             <h:outputLabel value="Nome"/>  
             <h:outputText value="#{parametroMBean.bean.nome}" />  
 
@@ -137,19 +131,6 @@
 
             <h:outputLabel value="Valor"/>  
             <h:outputText value="#{parametroMBean.bean.valor}" />  
-
-
-            <h:outputLabel value="Propriedades vinculadas"/>  
-            <h:panelGrid columns="1" style="width: 80%" >  
-                <p:dataList value="#{parametroMBean.propriedades}" 
-                            var="propriedade" 
-                            emptyMessage="Sem registro." >
-                    <f:facet name="header">
-                        Propriedades
-                    </f:facet>
-                    #{propriedade.nome} - #{propriedade.descricao}
-                </p:dataList>
-            </h:panelGrid>
 
             <p:commandButton value="Voltar" actionListener="#{parametroMBean.changeToListState()}" update="@form"/>
         </h:panelGrid>  

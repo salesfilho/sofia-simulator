@@ -5,11 +5,8 @@
                 xmlns="http://www.w3.org/1999/xhtml"   
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:o="http://omnifaces.org/ui">
-
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <!-- passa parâmetro para o template especificando o Mbean -->  
     <ui:param name="defaultBean" value="#{propriedadeMBean}" />  
@@ -19,7 +16,6 @@
         <f:facet name="header">  
             Pesquisar
         </f:facet>  
-
         <h:panelGrid columns="1" id="panel_searchBlock">  
         </h:panelGrid>
     </ui:define>  
@@ -28,9 +24,7 @@
     <ui:define name="listBlock">
         <h:panelGrid columns="1" id="panel_listBlock">  
             <p:column>
-
                 <p:commandButton value="Novo" actionListener="#{propriedadeMBean.changeToInsertState()}" update="@form"/>  
-
                 <p:dataTable id="list_lazyDataTable" 
                              value="#{propriedadeMBean.beans}"
                              var="propriedade"
@@ -68,7 +62,6 @@
                     <f:facet name="footer">  
                     </f:facet>  
                 </p:dataTable>
-
             </p:column>
         </h:panelGrid>
 
@@ -79,41 +72,11 @@
         <f:facet name="header">  
             Cadastrar de propriedade
         </f:facet>  
-
-        <h:panelGrid columns="2" id="panel_insertBlock" style="width: 100%" >  
-            <h:outputLabel value="Nome"/>  
+        <h:panelGrid columns="2" id="panel_insertBlock">  
+            <h:outputLabel value="Nome: "/>  
             <h:inputText value="#{propriedadeMBean.bean.nome}" size="30" />  
-
-            <h:outputLabel value="Descricao"/>  
+            <h:outputLabel value="Descricao: "/>  
             <h:inputText value="#{propriedadeMBean.bean.descricao}" size="30" />  
-
-            <h:outputLabel value="Parametros"/>  
-            <p:pickList  value="#{propriedadeMBean.insertParametroList}" 
-                         var="parametro" 
-                         effect="fade"
-                         itemValue="#{parametro}" 
-                         itemLabel="#{parametro.descricao}  (#{parametro.nome})" 
-                         showSourceControls="false" 
-                         showTargetControls="false" 
-                         showCheckbox="true" 
-                         responsive="true"
-                         showSourceFilter="true" 
-                         showTargetFilter="true" 
-                         filterMatchMode="contains" 
-                         >
-                <o:converter converterId="omnifaces.ListConverter" list="#{propriedadeMBean.fullList}" />
-
-                <f:facet name="sourceCaption">Disponíveis</f:facet>
-                <f:facet name="targetCaption">Selecionados</f:facet>
-
-                <p:column>
-                    <h:outputText value="#{parametro.nome}" />
-                </p:column>
-
-                <p:column>
-                    <h:outputText value="#{parametro.descricao}" />
-                </p:column>
-            </p:pickList>
 
             <p:commandButton value="Cadastrar" actionListener="#{propriedadeMBean.processInsert()}" update="@form"/>  
             <p:commandButton value="Cancelar" actionListener="#{propriedadeMBean.changeToListState()}" update="@form"/>  
@@ -126,73 +89,16 @@
         <f:facet name="header">  
             Edita
         </f:facet>  
-        <h:panelGrid columns="2" id="panel_updateBlock" style="width: 100%" >  
-            <h:outputLabel value="Nome"/>  
+        <h:panelGrid columns="2" id="panel_updateBlock">  
+            <h:outputLabel value="Nome: "/>  
             <h:inputText value="#{propriedadeMBean.bean.nome}" size="30" />  
 
-            <h:outputLabel value="Descricao"/>  
+            <h:outputLabel value="Descricao: "/>  
             <h:inputText value="#{propriedadeMBean.bean.descricao}" size="30" />  
-
-            <h:outputLabel value="Propriedades"/>  
-
-            <p:panel  header="Parâmetros" style="margin-bottom:20px">
-                <h:panelGrid columns="3">
-
-                    <p:selectOneListbox style="width: 350px;height: 400px"
-                                        id="src_prop_lst" 
-                                        label="Origem"
-                                        value="#{propriedadeMBean.srcParametro}" 
-                                        converter="omnifaces.SelectItemsConverter" 
-                                        var="p" 
-                                        filter="true" 
-                                        filterMatchMode="contains">
-                        <f:selectItems value="#{propriedadeMBean.soucreList}" 
-                                       var="par" 
-                                       itemLabel="#{par.nome}" 
-                                       itemValue="#{par}" />
-                        <p:column>
-                            <h:outputText value="#{p.nome}" />
-                        </p:column>
-
-                        <p:column>
-                            <h:outputText value="#{p.descricao}" />
-                        </p:column>
-                    </p:selectOneListbox>
-
-                    <p:panelGrid columns="1">
-
-                        <p:commandButton  actionListener="#{propriedadeMBean.addPropriedade()}" icon="ui-icon-arrowthick-1-e" title="Adicionar" update="@form"/>
-                        <p:commandButton  actionListener="#{propriedadeMBean.removePropriedade()}" icon="ui-icon-arrowthick-1-w" title="Remover" update="@form"/>
-
-                    </p:panelGrid>
-
-                    <p:selectOneListbox style="width: 350px;height: 400px"
-                                        id="dst_prop_lst" 
-                                        label="Destino"
-                                        value="#{propriedadeMBean.dstParametro}" 
-                                        converter="omnifaces.SelectItemsConverter" 
-                                        var="p" 
-                                        filter="true" 
-                                        filterMatchMode="contains">
-                        <f:selectItems value="#{propriedadeMBean.destinationList}" 
-                                       var="par" 
-                                       itemLabel="#{par.nome}" 
-                                       itemValue="#{par}" />
-                        <p:column>
-                            <h:outputText value="#{p.nome}" />
-                        </p:column>
-
-                        <p:column>
-                            <h:outputText value="#{p.descricao}" />
-                        </p:column>
-                    </p:selectOneListbox>
-                </h:panelGrid>
-            </p:panel>
 
             <p:commandButton value="Salvar" actionListener="#{propriedadeMBean.processUpdate()}" update="@form"/>
             <p:commandButton value="Voltar" actionListener="#{propriedadeMBean.changeToListState()}" update="@form"/>
         </h:panelGrid>  
-
     </ui:define>  
 
 
@@ -201,24 +107,11 @@
         <f:facet name="header">  
             Detalhe
         </f:facet>  
-        <h:panelGrid columns="2" id="panel_detailBlock" style="width: 100%" >  
-            <h:outputLabel value="Nome"/>  
+        <h:panelGrid columns="2" id="panel_detailBlock">  
+            <h:outputLabel value="Nome: "/>  
             <h:outputText value="#{propriedadeMBean.bean.nome}" />  
-
-            <h:outputLabel value="Descricao"/>  
+            <h:outputLabel value="Descricao: "/>  
             <h:outputText value="#{propriedadeMBean.bean.descricao}" />  
-
-            <h:outputLabel value="Parametros"/>  
-            <h:panelGrid columns="1" style="width: 80%" >  
-                <p:dataList value="#{propriedadeMBean.parametros}" 
-                            var="parametro" 
-                            emptyMessage="Sem registro." >
-                    <f:facet name="header">
-                        Parametros
-                    </f:facet>
-                    #{parametro.nome} - #{parametro.descricao}
-                </p:dataList>
-            </h:panelGrid>
 
             <p:commandButton value="Voltar" actionListener="#{propriedadeMBean.changeToListState()}" update="@form"/>
         </h:panelGrid>  

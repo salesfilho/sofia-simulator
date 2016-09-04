@@ -5,10 +5,8 @@
                 xmlns="http://www.w3.org/1999/xhtml"   
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:o="http://omnifaces.org/ui">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 
     <!-- passa parâmetro para o template especificando o Mbean -->  
@@ -29,9 +27,7 @@
     <ui:define name="listBlock">
         <h:panelGrid columns="1" id="panel_listBlock">  
             <p:column>
-
                 <p:commandButton value="Novo" actionListener="#{substanciaMBean.changeToInsertState()}" update="@form"/>  
-
                 <p:dataTable id="list_lazyDataTable" 
                              value="#{substanciaMBean.beans}"
                              var="substancia"
@@ -42,7 +38,6 @@
                              currentPageReportTemplate="Exibindo de {startRecord} até {endRecord} do total de {totalRecords} registros."
                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                              rowsPerPageTemplate="5,10,15">
-
                     <f:facet name="header">
                         Substâncias
                     </f:facet>
@@ -63,7 +58,7 @@
                         <h:outputText value="#{substancia.formula}" />
                     </p:column>
 
-                    <p:column headerText="Massa molar" sortBy="#{substancia.massaMolar}" filterBy="#{substancia.massaMolar}">
+                    <p:column headerText="Massa molar: " sortBy="#{substancia.massaMolar}" filterBy="#{substancia.massaMolar}">
                         <h:outputText value="#{substancia.massaMolar}" />
                     </p:column>
 
@@ -86,139 +81,326 @@
     </ui:define>  
 
     <!-- Bloco de Insert -->
-    <ui:define name="insertBlock">          
-        <f:facet name="header">  
-            Cadastrar de Substâncias
-        </f:facet>  
+    <ui:define name="insertBlock">
 
-        <h:panelGrid columns="2" id="panel_insertBlock" style="width: 100%">  
-            <h:outputLabel value="Nome"/>  
-            <h:inputText value="#{substanciaMBean.bean.nome}" size="30" />  
+        <p:wizard flowListener="#{substanciaMBean.onFlowInsertProcess}" 
+                  id="id_wizard_insert"
+                  nextLabel="Próximo"
+                  backLabel="Anterior"
+                  >
+            <p:tab id="tab_substancia_insert" title="Substância">
+                <p:panel header="Detalhe da substância">
+                    <p:messages />
+                    <h:panelGrid columns="2" columnClasses="label, value">
+                        <h:outputLabel value="Nome: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.nome}" size="30" required="true" />  
 
-            <h:outputLabel value="Descrição"/>  
-            <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" />  
+                        <h:outputLabel value="Descrição: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" required="true"/>  
 
-            <h:outputLabel value="Formula"/>  
-            <h:inputText value="#{substanciaMBean.bean.formula}" size="30" />  
+                        <h:outputLabel value="Formula: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.formula}" size="30" required="true"/>  
 
-            <h:outputLabel value="Massa molar"/>  
-            <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" />  
+                        <h:outputLabel value="Massa molar: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" required="true"/>  
+                    </h:panelGrid>
+                </p:panel>
+            </p:tab>
 
-            <h:outputLabel value="Propriedades"/>  
-            <p:pickList  value="#{substanciaMBean.insertPropriedadeList}" 
-                         var="propriedade" 
-                         effect="fade"
-                         itemValue="#{propriedade}" 
-                         itemLabel="#{propriedade.nome}  (#{propriedade.descricao})" 
-                         showSourceControls="false" 
-                         showTargetControls="false" 
-                         showCheckbox="true" 
-                         responsive="true"
-                         showSourceFilter="true" 
-                         showTargetFilter="true" 
-                         filterMatchMode="contains" 
-                         >
-                <o:converter converterId="omnifaces.ListConverter" list="#{substanciaMBean.fullList}" />
+            <p:tab id="tab_propriedades_insert" title="Propriedades">
+                <p:panel header="Adicionar propriedades para substância: #{substanciaMBean.bean.nome}">
+                    <p:messages />
+                    <h:panelGrid columns="2" columnClasses="label, value">
+                        <h:outputLabel value="Nome: "/>  
+                        <h:inputText value="#{substanciaMBean.propriedade.nome}" size="30"/>  
 
-                <f:facet name="sourceCaption">Disponíveis</f:facet>
-                <f:facet name="targetCaption">Selecionados</f:facet>
+                        <h:outputLabel value="Descricao: "/>  
+                        <h:inputText value="#{substanciaMBean.propriedade.descricao}" size="30"/>  
 
-                <p:column style="width:15%">
-                    <h:outputText value="#{propriedade.nome}" />
-                </p:column>
+                        <h:outputLabel value="" />  
+                        <p:commandButton value="Adicionar" actionListener="#{substanciaMBean.addPropriedade()}" update="@form"/>  
+                    </h:panelGrid>
+                    <p:dataTable id="dtPropriedades_insert" var="prop" value="#{substanciaMBean.bean.propriedades}">
+                        <p:column headerText="Nome">
+                            <h:outputText value="#{prop.nome}"/>
+                        </p:column>
+                        <p:column headerText="Descrição">
+                            <h:outputText value="#{prop.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="150" style="alignment-adjust: central" >
+                            <p:commandButton actionListener="#{substanciaMBean.removePropriedade(prop)}" update="dtPropriedades_insert" icon="ui-icon-trash" title="Excluir"/> 
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </p:tab>
 
-                <p:column style="width:85%;">
-                    <h:outputText value="#{propriedade.descricao}" />
-                </p:column>
-            </p:pickList>
+            <p:tab id="tab_parametros_insert" title="Parametro">
+                <p:panel header="Adicionar parâmetros para #{substanciaMBean.bean.propriedades.size()} propriedades">
+                    <p:messages />
+                    <p:dataTable id="dtPropriedadesParametros_insert" var="prop" value="#{substanciaMBean.bean.propriedades}">
+                        <p:column headerText="Propriedade">
+                            <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
+                        </p:column>
 
-            <p:commandButton value="Cadastrar" actionListener="#{substanciaMBean.processInsert()}" update="@form"/>  
-            <p:commandButton value="Cancelar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>  
-        </h:panelGrid>  
+                        <p:column headerText="Parâmetros incluídos">
+                            <p:dataTable id="dtParametros_insert" var="par" value="#{prop.parametros}">
+                                <p:column headerText="Nome">
+                                    <h:outputText value="#{par.nome}" />
+                                </p:column>
+                                <p:column headerText="Descrição">
+                                    <h:outputText value="#{par.descricao}" />
+                                </p:column>
+                                <p:column headerText="Valor">
+                                    <h:outputText value="#{par.valor}" />
+                                </p:column>
+                                <p:column headerText="Ações" style="alignment-adjust: central" >
+                                    <p:commandButton actionListener="#{substanciaMBean.removeParametroFromPropriedade(par, prop)}" update="@form" icon="ui-icon-trash" title="Excluir"/> 
+                                </p:column>
+                            </p:dataTable> 
+                        </p:column>
+
+                        <p:column headerText="Ações" width="100">
+                            <p:commandButton id="paramBtn" value="Add" type="button" />
+                            <p:overlayPanel id="paramPanel" 
+                                            for="paramBtn" 
+                                            hideEffect="fade" 
+                                            dynamic="true" 
+                                            showCloseIcon="true"
+                                            dismissable="false"
+                                            style="width:500px;height: 180px; alignment-adjust: central"
+                                            >
+                                <h:panelGrid columns="2">  
+                                    <h:outputLabel value="Nome: "/>  
+                                    <h:inputText value="#{substanciaMBean.parametro.nome}" size="30" />  
+                                    <h:outputLabel value="Descricao: "/>  
+                                    <h:inputText value="#{substanciaMBean.parametro.descricao}" size="30" />  
+                                    <h:outputLabel value="Valor: "/>  
+                                    <h:inputText value="#{substanciaMBean.parametro.valor}" size="30" />  
+                                    <h:outputLabel value="" />  
+                                    <p:commandButton value="Adicionar" actionListener="#{substanciaMBean.addParametroToPropriedade(prop)}" update="@all"/>  
+                                </h:panelGrid>  
+                            </p:overlayPanel>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="tab_confirm_insert" title="Confirmação">
+                <p:panel header="Todas as informações inseridas">
+                    <p:fieldset legend="Substância" style="margin-bottom:20px">
+                        <h:panelGrid columns="2" columnClasses="label, value">
+                            <h:outputLabel value="Nome: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.nome}" />  
+
+                            <h:outputLabel value="Descrição: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.descricao}"/>  
+
+                            <h:outputLabel value="Formula: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.formula}"/>  
+
+                            <h:outputLabel value="Massa molar: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
+                        </h:panelGrid>
+
+                        <p:dataTable var="prop" value="#{substanciaMBean.bean.propriedades}">
+                            <p:column headerText="Propriedade ">
+                                <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
+                            </p:column>
+                            <p:column headerText="Parâmetros">
+                                <p:dataTable id="dtParametros" var="par" value="#{prop.parametros}">
+                                    <p:column headerText="Nome">
+                                        <h:outputText value="#{par.nome}" />
+                                    </p:column>
+                                    <p:column headerText="Descrição">
+                                        <h:outputText value="#{par.descricao}" />
+                                    </p:column>
+                                    <p:column headerText="Valor">
+                                        <h:outputText value="#{par.valor}" />
+                                    </p:column>
+                                </p:dataTable> 
+                            </p:column>
+                        </p:dataTable>
+                    </p:fieldset>
+
+                    <p:commandButton value="Cadastrar" actionListener="#{substanciaMBean.processInsert()}" update="@form"/>  
+                    <p:commandButton value="Cancelar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>  
+                </p:panel>
+            </p:tab>
+        </p:wizard>
 
     </ui:define>  
 
     <!-- Bloco de Update -->
     <ui:define name="updateBlock"> 
+
+        <p:wizard flowListener="#{substanciaMBean.onFlowUpdateProcess}" 
+                  id="id_wizard_update" 
+                  nextLabel="Próximo"
+                  backLabel="Anterior"
+                  >
+            <p:tab id="tab_substancia_update" title="Substância">
+                <p:panel header="Detalhe da substância">
+                    <p:messages />
+                    <h:panelGrid columns="2" columnClasses="label, value">
+                        <h:outputLabel value="Nome: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.nome}" size="30" rendered="true"/>  
+
+                        <h:outputLabel value="Descrição: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" rendered="true"/>  
+
+                        <h:outputLabel value="Formula: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.formula}" size="30" rendered="true"/>  
+
+                        <h:outputLabel value="Massa molar: "/>  
+                        <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" rendered="true"/>  
+                    </h:panelGrid>
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="tab_propriedades_update" title="Propriedades">
+                <p:panel header="Adicionar propriedades para substância: #{substanciaMBean.bean.nome}">
+                    <p:messages />
+                    <h:panelGrid columns="2" columnClasses="label, value">
+                        <h:outputLabel value="Nome: "/>  
+                        <h:inputText value="#{substanciaMBean.propriedade.nome}" size="30" />  
+
+                        <h:outputLabel value="Descricao: "/>  
+                        <h:inputText value="#{substanciaMBean.propriedade.descricao}" size="30" />  
+
+                        <h:outputLabel value="" />  
+                        <p:commandButton value="Adicionar" actionListener="#{substanciaMBean.addPropriedade()}" update="@form"/>  
+                    </h:panelGrid>
+                    <p:dataTable id="dtPropriedades_update" var="prop" value="#{substanciaMBean.bean.propriedades}">
+                        <p:column headerText="Nome">
+                            <h:outputText value="#{prop.nome}"/>
+                        </p:column>
+                        <p:column headerText="Descrição">
+                            <h:outputText value="#{prop.descricao}" />
+                        </p:column>
+                        <p:column headerText="Ações" width="150" style="alignment-adjust: central" >
+                            <p:commandButton actionListener="#{substanciaMBean.removePropriedade(prop)}" update="dtPropriedades_update" icon="ui-icon-trash" title="Excluir"/> 
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="tab_parametros_update" title="Parametro">
+                <p:panel header="Adicionar parâmetros para #{substanciaMBean.bean.propriedades.size()} propriedades">
+                    <p:messages />
+                    <p:dataTable id="dtPropriedadesParametros_update" var="prop" value="#{substanciaMBean.bean.propriedades}">
+                        <p:column headerText="Propriedade">
+                            <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
+                        </p:column>
+
+                        <p:column headerText="Parâmetros incluídos">
+                            <p:dataTable id="dtParametros_update" var="par" value="#{prop.parametros}">
+                                <p:column headerText="Nome">
+                                    <h:outputText value="#{par.nome}" />
+                                </p:column>
+                                <p:column headerText="Descrição">
+                                    <h:outputText value="#{par.descricao}" />
+                                </p:column>
+                                <p:column headerText="Valor">
+                                    <h:outputText value="#{par.valor}" />
+                                </p:column>
+                                <p:column headerText="Ações" style="alignment-adjust: central" >
+                                    <p:commandButton actionListener="#{substanciaMBean.removeParametroFromPropriedade(par, prop)}" update="@form" icon="ui-icon-trash" title="Excluir"/> 
+                                </p:column>
+                            </p:dataTable> 
+                        </p:column>
+
+                        <p:column headerText="Ações" width="100">
+                            <p:commandButton id="paramBtn_update" value="Add" type="button" />
+                            <p:overlayPanel id="paramPanel_update" 
+                                            for="paramBtn_update" 
+                                            hideEffect="fade" 
+                                            dynamic="true" 
+                                            showCloseIcon="true"
+                                            dismissable="false"
+                                            style="width:500px;height: 180px; alignment-adjust: central"
+                                            >
+                                <h:panelGrid columns="2">  
+                                    <h:outputLabel value="Nome: "/>  
+                                    <h:inputText value="#{substanciaMBean.parametro.nome}" size="30" />  
+                                    <h:outputLabel value="Descricao: "/>  
+                                    <h:inputText value="#{substanciaMBean.parametro.descricao}" size="30" />  
+                                    <h:outputLabel value="Valor: "/>  
+                                    <h:inputText value="#{substanciaMBean.parametro.valor}" size="30" />  
+                                    <h:outputLabel value="" />  
+                                    <p:commandButton value="Adicionar" actionListener="#{substanciaMBean.addParametroToPropriedade(prop)}" update="@all"/>  
+                                </h:panelGrid>  
+                            </p:overlayPanel>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="tab_confirm_update" title="Confirmação">
+                <p:panel header="Todas as informações inseridas">
+                    <p:fieldset legend="Substância" style="margin-bottom:20px">
+                        <h:panelGrid columns="2" columnClasses="label, value">
+                            <h:outputLabel value="Nome: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.nome}" />  
+
+                            <h:outputLabel value="Descrição: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.descricao}"/>  
+
+                            <h:outputLabel value="Formula: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.formula}"/>  
+
+                            <h:outputLabel value="Massa molar: "/>  
+                            <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
+                        </h:panelGrid>
+
+                        <p:dataTable var="prop" value="#{substanciaMBean.bean.propriedades}">
+                            <p:column headerText="Propriedade ">
+                                <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
+                            </p:column>
+                            <p:column headerText="Parâmetros">
+                                <p:dataTable id="dtParametros_confirm_update" var="par" value="#{prop.parametros}">
+                                    <p:column headerText="Nome">
+                                        <h:outputText value="#{par.nome}" />
+                                    </p:column>
+                                    <p:column headerText="Descrição">
+                                        <h:outputText value="#{par.descricao}" />
+                                    </p:column>
+                                    <p:column headerText="Valor">
+                                        <h:outputText value="#{par.valor}" />
+                                    </p:column>
+                                </p:dataTable> 
+                            </p:column>
+                        </p:dataTable>
+                    </p:fieldset>
+                </p:panel>
+
+                <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
+                <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/> 
+
+            </p:tab>
+        </p:wizard>
+        <!--
         <f:facet name="header">  
             Editar
         </f:facet>  
-
         <h:panelGrid columns="2" id="panel_updateBlock" >  
-
-            <h:outputLabel value="Nome"/>  
+            <h:outputLabel value="Nome: "/>  
             <h:inputText value="#{substanciaMBean.bean.nome}" size="30" />  
 
-            <h:outputLabel value="Descrição"/>  
+            <h:outputLabel value="Descrição: "/>  
             <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" />  
 
-            <h:outputLabel value="Formula"/>  
+            <h:outputLabel value="Formula: "/>  
             <h:inputText value="#{substanciaMBean.bean.formula}" size="30" />  
 
-            <h:outputLabel value="Massa molar"/>  
+            <h:outputLabel value="Massa molar: "/>  
             <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" />  
 
-            <h:outputLabel value="Propriedades"/>  
-
-            <p:panel  header="Propriedades" style="margin-bottom:20px">
-                <h:panelGrid columns="3">
-
-                    <p:selectOneListbox style="width: 350px;height: 400px"
-                                        id="src_prop_lst" 
-                                        label="Origem"
-                                        value="#{substanciaMBean.srcPropriedade}" 
-                                        converter="omnifaces.SelectItemsConverter" 
-                                        var="p" 
-                                        filter="true" 
-                                        filterMatchMode="contains">
-                        <f:selectItems value="#{substanciaMBean.soucreList}" 
-                                       var="prop" 
-                                       itemLabel="#{prop.nome}" 
-                                       itemValue="#{prop}" />
-                        <p:column>
-                            <h:outputText value="#{p.nome}" />
-                        </p:column>
-
-                        <p:column>
-                            <h:outputText value="#{p.descricao}" />
-                        </p:column>
-                    </p:selectOneListbox>
-
-                    <p:panelGrid columns="1">
-
-                        <p:commandButton  actionListener="#{substanciaMBean.addPropriedade()}" icon="ui-icon-arrowthick-1-e" title="Adicionar" update="@form"/>
-                        <p:commandButton  actionListener="#{substanciaMBean.removePropriedade()}" icon="ui-icon-arrowthick-1-w" title="Remover" update="@form"/>
-
-                    </p:panelGrid>
-
-                    <p:selectOneListbox style="width: 350px;height: 400px"
-                                        id="dst_prop_lst" 
-                                        label="Destino"
-                                        value="#{substanciaMBean.dstPropriedade}" 
-                                        converter="omnifaces.SelectItemsConverter" 
-                                        var="p" 
-                                        filter="true" 
-                                        filterMatchMode="contains">
-                        <f:selectItems value="#{substanciaMBean.destinationList}" 
-                                       var="prop" 
-                                       itemLabel="#{prop.nome}" 
-                                       itemValue="#{prop}" />
-                        <p:column>
-                            <h:outputText value="#{p.nome}" />
-                        </p:column>
-
-                        <p:column>
-                            <h:outputText value="#{p.descricao}" />
-                        </p:column>
-                    </p:selectOneListbox>
-                </h:panelGrid>
-            </p:panel>
-
+            <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
+            <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
         </h:panelGrid>
-
-        <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
-        <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
-
+        -->
     </ui:define>  
 
 
@@ -230,31 +412,20 @@
 
         <h:panelGrid columns="2" id="panel_datailBlock" >  
 
-            <h:outputLabel value="Nome"/>  
+            <h:outputLabel value="Nome: "/>  
             <h:outputText value="#{substanciaMBean.bean.nome}" />  
 
-            <h:outputLabel value="Descrição"/>  
+            <h:outputLabel value="Descrição: "/>  
             <h:outputText value="#{substanciaMBean.bean.descricao}"/>  
 
-            <h:outputLabel value="Formula"/>  
+            <h:outputLabel value="Formula: "/>  
             <h:outputText value="#{substanciaMBean.bean.formula}"/>  
 
-            <h:outputLabel value="Massa molar"/>  
+            <h:outputLabel value="Massa molar: "/>  
             <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
-            <h:outputLabel value="Propriedades vinculadas"/>  
 
-            <h:panelGrid columns="1" style="width: 80%" >  
-                <p:dataList value="#{substanciaMBean.propriedades}" 
-                            var="propriedade" 
-                            emptyMessage="Sem registro." >
-                    <f:facet name="header">
-                        Propriedades
-                    </f:facet>
-                    #{propriedade.nome} - #{propriedade.descricao}
-                </p:dataList>
-            </h:panelGrid>
+            <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
         </h:panelGrid>  
-        <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
 
     </ui:define>  
 

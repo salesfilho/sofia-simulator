@@ -16,12 +16,11 @@
 package br.ufrn.sofia.domain;
 
 import java.util.Set;
+import java.util.TreeSet;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +35,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false, exclude = {"propriedades"})
 @Builder
 @Entity
 @SequenceGenerator(sequenceName = "seq_substancia", name = "ID_SEQUENCE", allocationSize = 1)
@@ -52,13 +51,21 @@ public class Substancia extends AbstractBean<Substancia, Long> {
     @Column(nullable = false, unique = false)
     private double massaMolar;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "propriedade_substancia",
-            joinColumns = @JoinColumn(table = "substancia", name = "substancias_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(table = "propriedade", name = "propriedades_id", referencedColumnName = "id"))
+    @OneToMany(mappedBy = "substancia", orphanRemoval = true, cascade = {CascadeType.ALL})
+    private Set<Propriedade> propriedades = new TreeSet<>();
 
-    private Set<Propriedade> propriedades;
+    public void addPropriedade(Propriedade prop) {
+        if (prop != null && !propriedades.contains(prop)) {
+            prop.setSubstancia(this);
+            propriedades.add(prop);
+        }
+    }
+
+    public void removePropriedade(Propriedade prop) {
+        if (prop != null && propriedades.contains(prop)) {
+            propriedades.remove(prop);
+        }
+    }
 
     @Override
     public int compareTo(Substancia obj) {
@@ -67,7 +74,7 @@ public class Substancia extends AbstractBean<Substancia, Long> {
 
     @Override
     public String toString() {
-        return String.format("Parametro[%d, %s]", getId(), getDescricao());
+        return String.format("Substancia[%d, %s, %s, %s]", getId(), getNome(), getDescricao(), getFormula());
     }
 
 }
