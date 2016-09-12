@@ -83,7 +83,7 @@
     <!-- Bloco de Insert -->
     <ui:define name="insertBlock">
 
-        <p:wizard flowListener="#{substanciaMBean.onFlowInsertProcess}" 
+        <p:wizard flowListener="#{substanciaMBean.onFlowSaveProcess}" 
                   id="id_wizard_insert"
                   nextLabel="Próximo"
                   backLabel="Anterior"
@@ -234,31 +234,27 @@
     <!-- Bloco de Update -->
     <ui:define name="updateBlock"> 
 
-        <p:wizard flowListener="#{substanciaMBean.onFlowUpdateProcess}" 
-                  id="id_wizard_update" 
-                  nextLabel="Próximo"
-                  backLabel="Anterior"
-                  >
-            <p:tab id="tab_substancia_update" title="Substância">
+        <p:tabView>
+            <p:tab title="Substância">
                 <p:panel header="Detalhe da substância">
-                    <p:messages />
                     <h:panelGrid columns="2" columnClasses="label, value">
                         <h:outputLabel value="Nome: "/>  
-                        <h:inputText value="#{substanciaMBean.bean.nome}" size="30" rendered="true"/>  
+                        <h:inputText value="#{substanciaMBean.bean.nome}" size="30" />  
 
                         <h:outputLabel value="Descrição: "/>  
-                        <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" rendered="true"/>  
+                        <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" />  
 
                         <h:outputLabel value="Formula: "/>  
-                        <h:inputText value="#{substanciaMBean.bean.formula}" size="30" rendered="true"/>  
+                        <h:inputText value="#{substanciaMBean.bean.formula}" size="30" />  
 
                         <h:outputLabel value="Massa molar: "/>  
-                        <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" rendered="true"/>  
+                        <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" />  
                     </h:panelGrid>
                 </p:panel>
+                <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
+                <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
             </p:tab>
-
-            <p:tab id="tab_propriedades_update" title="Propriedades">
+            <p:tab title="Propriedades">
                 <p:panel header="Adicionar propriedades para substância: #{substanciaMBean.bean.nome}">
                     <p:messages />
                     <h:panelGrid columns="2" columnClasses="label, value">
@@ -283,18 +279,19 @@
                         </p:column>
                     </p:dataTable>
                 </p:panel>
+                <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
+                <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
             </p:tab>
-
-            <p:tab id="tab_parametros_update" title="Parametro">
+            <p:tab title="Parametros">
                 <p:panel header="Adicionar parâmetros para #{substanciaMBean.bean.propriedades.size()} propriedades">
                     <p:messages />
-                    <p:dataTable id="dtPropriedadesParametros_update" var="prop" value="#{substanciaMBean.bean.propriedades}">
+                    <p:dataTable var="prop" value="#{substanciaMBean.bean.propriedades}">
                         <p:column headerText="Propriedade">
                             <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
                         </p:column>
 
                         <p:column headerText="Parâmetros incluídos">
-                            <p:dataTable id="dtParametros_update" var="par" value="#{prop.parametros}">
+                            <p:dataTable var="par" value="#{prop.parametros}">
                                 <p:column headerText="Nome">
                                     <h:outputText value="#{par.nome}" />
                                 </p:column>
@@ -335,97 +332,67 @@
 
                     </p:dataTable>
                 </p:panel>
-            </p:tab>
-
-            <p:tab id="tab_confirm_update" title="Confirmação">
-                <p:panel header="Todas as informações inseridas">
-                    <p:fieldset legend="Substância" style="margin-bottom:20px">
-                        <h:panelGrid columns="2" columnClasses="label, value">
-                            <h:outputLabel value="Nome: "/>  
-                            <h:outputText value="#{substanciaMBean.bean.nome}" />  
-
-                            <h:outputLabel value="Descrição: "/>  
-                            <h:outputText value="#{substanciaMBean.bean.descricao}"/>  
-
-                            <h:outputLabel value="Formula: "/>  
-                            <h:outputText value="#{substanciaMBean.bean.formula}"/>  
-
-                            <h:outputLabel value="Massa molar: "/>  
-                            <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
-                        </h:panelGrid>
-
-                        <p:dataTable var="prop" value="#{substanciaMBean.bean.propriedades}">
-                            <p:column headerText="Propriedade ">
-                                <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
-                            </p:column>
-                            <p:column headerText="Parâmetros">
-                                <p:dataTable id="dtParametros_confirm_update" var="par" value="#{prop.parametros}">
-                                    <p:column headerText="Nome">
-                                        <h:outputText value="#{par.nome}" />
-                                    </p:column>
-                                    <p:column headerText="Descrição">
-                                        <h:outputText value="#{par.descricao}" />
-                                    </p:column>
-                                    <p:column headerText="Valor">
-                                        <h:outputText value="#{par.valor}" />
-                                    </p:column>
-                                </p:dataTable> 
-                            </p:column>
-                        </p:dataTable>
-                    </p:fieldset>
-                </p:panel>
-
                 <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
-                <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/> 
-
+                <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
             </p:tab>
-        </p:wizard>
-        <!--
-        <f:facet name="header">  
-            Editar
-        </f:facet>  
-        <h:panelGrid columns="2" id="panel_updateBlock" >  
-            <h:outputLabel value="Nome: "/>  
-            <h:inputText value="#{substanciaMBean.bean.nome}" size="30" />  
+        </p:tabView>
 
-            <h:outputLabel value="Descrição: "/>  
-            <h:inputText value="#{substanciaMBean.bean.descricao}" size="30" />  
 
-            <h:outputLabel value="Formula: "/>  
-            <h:inputText value="#{substanciaMBean.bean.formula}" size="30" />  
-
-            <h:outputLabel value="Massa molar: "/>  
-            <h:inputText value="#{substanciaMBean.bean.massaMolar}" size="30" />  
-
-            <p:commandButton value="Salvar" actionListener="#{substanciaMBean.processUpdate()}" />
-            <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
-        </h:panelGrid>
-        -->
     </ui:define>  
-
 
     <!-- Bloco de Update -->
     <ui:define name="detailBlock"> 
-        <f:facet name="header">  
-            Editar
-        </f:facet>  
-
-        <h:panelGrid columns="2" id="panel_datailBlock" >  
-
-            <h:outputLabel value="Nome: "/>  
-            <h:outputText value="#{substanciaMBean.bean.nome}" />  
-
-            <h:outputLabel value="Descrição: "/>  
-            <h:outputText value="#{substanciaMBean.bean.descricao}"/>  
-
-            <h:outputLabel value="Formula: "/>  
-            <h:outputText value="#{substanciaMBean.bean.formula}"/>  
-
-            <h:outputLabel value="Massa molar: "/>  
-            <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
-
-            <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
-        </h:panelGrid>  
+        <p:fieldset legend="Detalhamento da Substância" id="substancia_detail">
+            <p:panel header="Informações gerais">
+                <h:panelGrid columns="2" columnClasses="label, value">
+                    <h:outputLabel value="Nome: "/>  
+                    <h:outputText value="#{substanciaMBean.bean.nome}"/>  
+                    <h:outputLabel value="Descrição: "/>  
+                    <h:outputText value="#{substanciaMBean.bean.descricao}" />  
+                    <h:outputLabel value="Formula: "/>  
+                    <h:outputText value="#{substanciaMBean.bean.formula}"/>  
+                    <h:outputLabel value="Massa molar: "/>  
+                    <h:outputText value="#{substanciaMBean.bean.massaMolar}" />  
+                </h:panelGrid>
+            </p:panel>
+            <p:panel header="Propriedades">
+                <p:dataTable id="dtPropriedades_update" var="prop" value="#{substanciaMBean.bean.propriedades}">
+                    <p:column headerText="Nome">
+                        <h:outputText value="#{prop.nome}"/>
+                    </p:column>
+                    <p:column headerText="Descrição">
+                        <h:outputText value="#{prop.descricao}" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            <p:panel header="Parâmetros">
+                <p:dataTable var="prop" value="#{substanciaMBean.bean.propriedades}">
+                    <p:column headerText="Propriedade">
+                        <h:outputText value="#{prop.nome} - (#{prop.descricao})"/>
+                    </p:column>
+                    <p:column headerText="Parâmetros incluídos">
+                        <p:dataTable var="par" value="#{prop.parametros}">
+                            <p:column headerText="Nome">
+                                <h:outputText value="#{par.nome}" />
+                            </p:column>
+                            <p:column headerText="Descrição">
+                                <h:outputText value="#{par.descricao}" />
+                            </p:column>
+                            <p:column headerText="Valor">
+                                <h:outputText value="#{par.valor}" />
+                            </p:column>
+                        </p:dataTable> 
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            
+            <h:panelGrid columns="2">
+                <p:commandButton value="Voltar" actionListener="#{substanciaMBean.changeToListState()}" update="@form"/>
+                <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
+                    <p:printer target="substancia_detail" />
+                </p:commandButton>
+            </h:panelGrid>
+        </p:fieldset>
 
     </ui:define>  
 

@@ -20,6 +20,7 @@ import br.ufrn.sofia.domain.Propriedade;
 import br.ufrn.sofia.domain.Substancia;
 import br.ufrn.sofia.service.ParametroService;
 import br.ufrn.sofia.service.PropriedadeService;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -61,6 +62,27 @@ public class SubstanciaMBean extends CrudMBean<Substancia, Long> {
         super.changeToInsertState();
     }
 
+    @Override
+    public void startUpdate(Long id) {
+        super.startUpdate(id);
+        propriedade = new Propriedade();
+        parametro = new Parametro();
+    }
+
+    @Override
+    public void processInsert() {
+        for (Propriedade prop : getBean().getPropriedades()) {
+            if (prop.getParametros().isEmpty()) {
+                getBean().removePropriedade(prop);
+            }
+        }
+        if (getBean().getPropriedades().isEmpty()) {
+            addMessage(FacesMessage.SEVERITY_WARN, "Alerta: ", "As propriedades da substância não foram incluídas corretamente.");
+        } else {
+            super.processInsert();
+        }
+    }
+
     public void addPropriedade() {
         if (propriedade != null && !getBean().getPropriedades().contains(propriedade)) {
             getBean().addPropriedade(propriedade);
@@ -91,17 +113,12 @@ public class SubstanciaMBean extends CrudMBean<Substancia, Long> {
         }
     }
 
-    public String onFlowInsertProcess(FlowEvent event) {
+    public String onFlowSaveProcess(FlowEvent event) {
         System.out.println("Insert: " + event);
         //Insere logo a substância
         if (event.getOldStep().equalsIgnoreCase("tab_substancia_insert")) {
             //this.save();
         }
-        return event.getNewStep();
-    }
-
-    public String onFlowUpdateProcess(FlowEvent event) {
-        System.out.println("Update: " + event);
         return event.getNewStep();
     }
 }

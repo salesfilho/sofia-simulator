@@ -49,7 +49,8 @@ public class Propriedade extends AbstractBean<Propriedade, Long> {
 
     private static final long serialVersionUID = 1L;
 
-    @OneToMany(mappedBy = "propriedade", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "propriedade", orphanRemoval = true,
+            fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private Set<Parametro> parametros = new TreeSet<>();
 
     @ManyToOne(optional = false)

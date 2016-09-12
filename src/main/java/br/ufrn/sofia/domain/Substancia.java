@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
@@ -51,7 +52,8 @@ public class Substancia extends AbstractBean<Substancia, Long> {
     @Column(nullable = false, unique = false)
     private double massaMolar;
 
-    @OneToMany(mappedBy = "substancia", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "substancia", orphanRemoval = true,
+            fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private Set<Propriedade> propriedades = new TreeSet<>();
 
     public void addPropriedade(Propriedade prop) {
